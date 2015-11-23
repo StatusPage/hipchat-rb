@@ -192,6 +192,32 @@ describe "HipChat (API V2)" do
       expect(room.send("Dude", "Hello world", :message_format => 'text')).to be_truthy
     end
 
+    it "successfully with a card" do
+      mock_successful_send 'Dude', 'Hello world', :card => {
+        style:       'application',
+        url:         'https://www.google.com',
+        id:          123,
+        icon: {
+          url: 'http://placekitten.com/200/300'
+        },
+        title:       'Cat pic',
+        description: 'A very cute cat pic',
+        date:        1448320870
+      }
+
+      expect(room.send('Dude', 'Hello world', :card => {
+        style:       'application',
+        url:         'https://www.google.com',
+        id:          123,
+        icon: {
+          url: 'http://placekitten.com/200/300'
+        },
+        title:       'Cat pic',
+        description: 'A very cute cat pic',
+        date:        1448320870
+      })).to be_truthy
+    end
+
     it "but fails when the room doesn't exist" do
       mock(HipChat::Room).post(anything, anything) {
         OpenStruct.new(:code => 404)

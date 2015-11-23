@@ -168,17 +168,22 @@ module HipChat
 
       options = { :color => 'yellow', :notify => false }.merge options
 
+      body = {
+        :room_id        => room_id,
+        :from           => from,
+        :message        => message,
+        :message_format => options[:message_format] || 'html',
+        :color          => options[:color],
+        :card           => options[:card],
+        :notify         => @api.bool_val(options[:notify])
+      }
+
+      # Card is a v2 only feature.  Remove it entirely if we making a v1 request
+      body.delete(:card) if @api.version == 'v1'
+
       response = self.class.post(@api.send_config[:url],
         :query => { :auth_token => @token },
-        :body  => {
-          :room_id        => room_id,
-          :from           => from,
-          :message        => message,
-          :message_format => options[:message_format] || 'html',
-          :color          => options[:color],
-          :card           => options[:card],
-          :notify         => @api.bool_val(options[:notify])
-        }.send(@api.send_config[:body_format]),
+        :body  => body.send(@api.send_config[:body_format]),
         :headers => @api.headers
       )
 
