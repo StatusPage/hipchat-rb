@@ -174,12 +174,11 @@ module HipChat
         :message        => message,
         :message_format => options[:message_format] || 'html',
         :color          => options[:color],
-        :card           => options[:card],
         :notify         => @api.bool_val(options[:notify])
       }
 
-      # Card is a v2 only feature.  Remove it entirely if we making a v1 request
-      body.delete(:card) if @api.version == 'v1'
+      # Card is a v2 only feature.
+      body[:card] = options[:card] if options[:card] && @api.version == 'v2'
 
       response = self.class.post(@api.send_config[:url],
         :query => { :auth_token => @token },
