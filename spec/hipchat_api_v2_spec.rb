@@ -49,7 +49,7 @@ describe "HipChat (API V2)" do
         OpenStruct.new(:code => 403)
       }
 
-      expect { room.history }.to raise_error(HipChat::UnknownResponseCode)
+      expect { room.history }.to raise_error(HipChat::Unauthorized)
     end
   end
 
@@ -90,7 +90,7 @@ describe "HipChat (API V2)" do
         OpenStruct.new(:code => 403)
       }
 
-      expect { room.statistics }.to raise_error(HipChat::UnknownResponseCode)
+      expect { room.statistics }.to raise_error(HipChat::Unauthorized)
     end
   end
 
@@ -129,7 +129,7 @@ describe "HipChat (API V2)" do
           OpenStruct.new(:code => 403)
         }
 
-      expect { room.topic "" }.to raise_error(HipChat::UnknownResponseCode)
+      expect { room.topic "" }.to raise_error(HipChat::Unauthorized)
     end
   end
 
@@ -162,7 +162,7 @@ describe "HipChat (API V2)" do
         OpenStruct.new(:code => 403)
       }
 
-      expect { room.send_message "" }.to raise_error(HipChat::UnknownResponseCode)
+      expect { room.send_message "" }.to raise_error(HipChat::Unauthorized)
     end
   end
 
@@ -243,7 +243,7 @@ describe "HipChat (API V2)" do
         OpenStruct.new(:code => 403)
       }
 
-      expect { room.send "", "" }.to raise_error(HipChat::UnknownResponseCode)
+      expect { room.send "", "" }.to raise_error(HipChat::Unauthorized)
     end
   end
 
@@ -282,7 +282,7 @@ describe "HipChat (API V2)" do
       }
 
       lambda { room.share_link "", "", link }.
-        should raise_error(HipChat::UnknownResponseCode)
+        should raise_error(HipChat::Unauthorized)
     end
   end
 
@@ -330,7 +330,7 @@ describe "HipChat (API V2)" do
       }
 
       lambda { room.send_file "", "", file }.
-        should raise_error(HipChat::UnknownResponseCode)
+        should raise_error(HipChat::Unauthorized)
     end
   end
 
@@ -402,6 +402,22 @@ describe "HipChat (API V2)" do
     it "successfully" do
       mock_successful_update_room("Hipchat", room_info)
       expect(room.update_room(room_info)).to be_truthy
+    end
+  end
+
+  describe "#delete_room" do
+    include_context "HipChatV2"
+
+    it "successfully" do
+      mock_successful_delete_room("Hipchat",)
+      expect(room.delete_room).to be_truthy
+    end
+
+    it "missing room" do
+      mock_delete_missing_room("Hipchat")
+      expect do
+        room.delete_room
+      end.to raise_exception(HipChat::UnknownRoom)
     end
   end
 
@@ -547,7 +563,7 @@ describe "HipChat (API V2)" do
       }
 
       lambda { room.create_webhook('https://example.org/hooks/awesome', 'room_enter') }.
-        should raise_error(HipChat::UnknownResponseCode)
+        should raise_error(HipChat::Unauthorized)
     end
   end
 
@@ -582,7 +598,7 @@ describe "HipChat (API V2)" do
       }
 
       lambda { room.delete_webhook('my_awesome_webhook') }.
-        should raise_error(HipChat::UnknownResponseCode)
+        should raise_error(HipChat::Unauthorized)
     end
   end
 
@@ -617,7 +633,7 @@ describe "HipChat (API V2)" do
       }
 
       lambda { room.get_all_webhooks }.
-        should raise_error(HipChat::UnknownResponseCode)
+        should raise_error(HipChat::Unauthorized)
     end
   end
 
@@ -652,7 +668,7 @@ describe "HipChat (API V2)" do
       }
 
       lambda { room.get_webhook('5678') }.
-        should raise_error(HipChat::UnknownResponseCode)
+        should raise_error(HipChat::Unauthorized)
     end
   end
 end

@@ -20,10 +20,12 @@ module HipChat
           @base_uri = "#{options[:server_url]}/v1"
           @headers = {'Accept' => 'application/json',
              'Content-Type' => 'application/x-www-form-urlencoded'}
-        else
+        elsif @version.eql?('v2')
           @base_uri = "#{options[:server_url]}/v2"
           @headers = {'Accept' => 'application/json',
              'Content-Type' => 'application/json'}
+        else
+          raise InvalidApiVersion, 'Couldn\'t recognize API version'
         end
       end
 
@@ -125,6 +127,21 @@ module HipChat
             :url => URI::escape("/#{room_id}"),
             :method => :put,
             :body_format => :to_json
+          }
+        }[version]
+      end
+
+      def delete_room_config
+        {
+          'v1' => {
+            :url => URI::escape("/delete"),
+            :method => :post,
+            :query_params => { :room_id => room_id }
+          },
+          'v2' => {
+            :url => URI::escape("/#{room_id}"),
+            :method => :delete,
+            :query_params => {}
           }
         }[version]
       end
